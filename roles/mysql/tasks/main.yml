@@ -1,0 +1,14 @@
+---
+- name: Install MySQL Server
+  apt: name=mysql-server state=present
+
+- name: Configure MySQL Server
+  template: src=getlicense.cnf.j2 dest=/etc/mysql/conf.d/getlicense.cnf
+  notify:
+  - Restart MySQL Server
+
+- name: Create getlicense database
+  mysql_db: name=getlicense state=present
+
+- name: Create getlicense user
+  mysql_user: name=getlicense password= priv=*.*:ALL state=present

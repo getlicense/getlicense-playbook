@@ -1,0 +1,22 @@
+<VirtualHost *:80>
+    ServerAdmin hello@getlicense.io
+
+    DocumentRoot /usr/local/getlicense/webapp
+
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+    </Directory>
+
+    <Directory /usr/local/getlicense/webapp>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride None
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    LogLevel warn
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+
+</VirtualHost>

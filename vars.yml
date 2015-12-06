@@ -1,0 +1,18 @@
+---
+"api": {
+  "repo": "klicap-snapshots::default::http://clinker-cloud.klicap.es/nexus/content/repositories/klicap-snapshots",
+  "artifact": "es.klicap.getlicense:api:1.0-SNAPSHOT:zip:bin",
+  "filename": "api-1.0-SNAPSHOT-bin.zip"
+}
+
+"webapp": {
+  "repo": "klicap-snapshots::default::http://clinker-cloud.klicap.es/nexus/content/repositories/klicap-snapshots",
+  "artifact": "es.klicap.getlicense:webapp:1.0-SNAPSHOT:zip",
+  "filename": "webapp-1.0-SNAPSHOT.zip"
+}
+
+"vertx": {
+  "url": "https://bintray.com/artifact/download/vertx/downloads/vert.x-2.1.5.tar.gz",
+  "filename": "vert.x-2.1.5.tar.gz",
+  "folder": "vert.x-2.1.5"
+}

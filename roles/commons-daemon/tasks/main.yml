@@ -1,0 +1,9 @@
+---
+- name: Copying Apache Commons Daemon
+  unarchive: src=jsvc-1.0.15.tar.gz dest=/usr/local
+
+- name: Setting owner
+  file: path=/usr/local/jsvc-1.0.15 owner=root group=staff mode=0755
+
+- name: Add symbolic link
+  file: src=/usr/local/jsvc-1.0.15 dest=/usr/local/jsvc state=link

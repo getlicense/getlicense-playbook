@@ -1,0 +1,33 @@
+---
+- name: getlicense
+  user: root
+  hosts: '{{ env }}'
+  gather_facts: yes
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+  - name: Installing base dependencies
+    command: apt-get install -y python-apt
+
+  - name: Updating package lists
+    apt: update_cache=yes cache_valid_time=3600
+
+  - name: Installing base packages
+    apt: name={{ item }} state=present
+    with_items:
+      - python-mysqldb
+      - python-httplib2
+      - unzip
+
+  roles:
+    - getlicense-api
+    - getlicense-webapp
+#    - getlicense-docs
+
+#  tasks:
+#    - shell: echo 'still busy'
+
+#  post_tasks:
+#    - shell: echo 'goodbye'

@@ -1,0 +1,20 @@
+---
+- name: Checks if Vert.x has already been installed
+  stat: path=/usr/local/{{ vertx.folder }}
+  register: vertx_info
+
+- name: Downloading Vert.x binary (dist)
+  get_url: url={{ vertx.url }} dest=/tmp owner=root group=root mode=0664
+  when: vertx_info.stat.exists == false
+
+- name: Decompressing Vert.x
+  command: tar -xvzf /tmp/{{ vertx.filename }} -C /usr/local creates=/usr/local/{{ vertx.folder }}
+  when: vertx_info.stat.exists == false
+
+- name: Setting owner
+  file: path=/usr/local/{{ vertx.folder }} owner=root group=staff mode=0755
+  when: vertx_info.stat.exists == false
+  
+- name: Add symbolic link
+  file: src=/usr/local/{{ vertx.folder }} dest=/usr/local/vertx state=link
+  when: vertx_info.stat.exists == false

@@ -1,0 +1,7 @@
+---
+dependencies:
+  - mysql
+  - redis
+  - oraclejdk
+  - vertx
+  - commons-daemon

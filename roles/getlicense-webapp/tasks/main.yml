@@ -1,0 +1,42 @@
+---
+- name: Add directory for getlicense home
+  file: dest=/usr/local/getlicense state=directory
+
+- name: Checks if API has already been installed
+  stat: path=/usr/local/getlicense/webapp
+  register: webapp_info
+
+- name: Downloading getlicense Webapp binary (dist)
+  local_action: command mvn -U org.apache.maven.plugins:maven-dependency-plugin:get -Dartifact={{ webapp.artifact }} -Dtransitive=false -DremoteRepositories={{ webapp.repo }} -Ddest=/tmp chdir=/tmp
+  when: webapp_info.stat.exists == false
+
+- name: Copying getlicense Webapp binary (dist)
+  copy: src=/tmp/{{ webapp.filename }} dest=/tmp
+  when: webapp_info.stat.exists == false
+
+- name: Decompressing Webapp binary (dist)
+  command: unzip -u {{ webapp.filename }} -d /usr/local/getlicense chdir=/tmp
+  when: webapp_info.stat.exists == false
+
+- name: Renaming folder
+  command: mv /usr/local/getlicense/getlicense /usr/local/getlicense/webapp chdir=/tmp
+  when: webapp_info.stat.exists == false
+
+- name: Set owner and permissions
+  file: path=/usr/local/getlicense/webapp owner=root group=staff mode=0755
+  when: webapp_info.stat.exists == false
+
+- name: Configuring Webapp
+  replace:
+    dest=/usr/local/getlicense/webapp/resources/config.json
+    regexp='^    "APIBASE_URL"':' "http://localhost\:8080"'
+    replace='    "APIBASE_URL"':' "http://{{ ansible_ssh_host }}:8080"'
+
+- name: Installing Apache Web Server package
+  apt: name=apache2 state=present
+
+- name: Copy VirtualHost config file
+  copy: src=default dest=/etc/apache2/sites-available force=yes
+
+- name: Restart Apache Web Server
+  service: name=apache2 state=restarted

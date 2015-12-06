@@ -1,0 +1,20 @@
+---
+- name: Checks if Oracle JDK has already been installed
+  stat: path=/usr/local/jdk1.7.0_51
+  register: jdk_info
+
+- name: Downloading Oracle JDK
+  get_url: url=http://dl.clinkerhq.com/JDKs/jdk-7u51-linux-x64.tar.gz dest=/tmp mode=0440
+  when: jdk_info.stat.exists == false
+
+- name: Decompressing Oracle JDK
+  command: tar -xvzf /tmp/jdk-7u51-linux-x64.tar.gz -C /usr/local creates=/usr/local/jdk1.7.0_51
+  when: jdk_info.stat.exists == false
+
+- name: Setting owner
+  file: path=/usr/local/jdk1.7.0_51 owner=root group=staff mode=0755
+  when: jdk_info.stat.exists == false
+
+- name: Add symbolic link
+  file: src=/usr/local/jdk1.7.0_51 dest=/usr/local/java state=link
+  when: jdk_info.stat.exists == false

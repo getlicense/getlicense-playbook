@@ -1,0 +1,46 @@
+---
+- name: Add directory for getlicense home
+  file: dest=/usr/local/getlicense state=directory
+
+- name: Checks if API has already been installed
+  stat: path=/usr/local/getlicense/api
+  register: api_info
+
+- name: Downloading getlicense API binary (dist)
+  local_action: command mvn -U org.apache.maven.plugins:maven-dependency-plugin:get -Dartifact={{ api.artifact }} -Dtransitive=false -DremoteRepositories={{ api.repo }} -Ddest=/tmp chdir=/tmp
+  when: api_info.stat.exists == false
+
+- name: Copying getlicense API binary (dist)
+  copy: src=/tmp/{{ api.filename }} dest=/tmp/api-1.0-SNAPSHOT-bin.zip
+  when: api_info.stat.exists == false
+
+- name: Decompressing API binary (dist)
+  command: unzip -u {{ api.filename }} -d /usr/local/getlicense chdir=/tmp
+  when: api_info.stat.exists == false
+
+- name: Set owner and permissions
+  file: path=/usr/local/getlicense/api-1.0-SNAPSHOT owner=root group=staff mode=0755
+  when: api_info.stat.exists == false
+
+- name: Add symbolic link
+  file: src=/usr/local/getlicense/api-1.0-SNAPSHOT dest=/usr/local/getlicense/api state=link
+  when: api_info.stat.exists == false
+
+- name: Add symbolic link for init.d script
+  file: src=/usr/local/getlicense/api/bin/getlicense-api.sh dest=/etc/init.d/getlicense-api state=link
+  when: api_info.stat.exists == false
+
+- name: Add a new entry in /etc/hosts
+  lineinfile: dest=/etc/hosts regexp='^{{ ansible_ssh_host }}' line='{{ ansible_ssh_host }} api.getlicense.io' state=present
+
+- name: Configuring API
+  replace:
+    dest=/usr/local/getlicense/api/conf/config.json
+    regexp='^        "host"':' "api.getlicense.io",'
+    replace='        "host"':' "{{ ansible_ssh_host }}",'
+
+- name: Enable getlicense API service
+  service: name=getlicense-api enabled=yes
+
+- name: Start getlicense API service
+  service: name=getlicense-api state=restarted

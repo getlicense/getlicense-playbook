@@ -1,0 +1,17 @@
+<VirtualHost *:80>
+    ServerAdmin hello@getlicense.io
+    ServerName docs.getlicense.io
+
+    DocumentRoot /usr/local/getlicense/docs
+    <Directory /usr/local/getlicense/docs>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride None
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    LogLevel warn
+
+    ErrorLog ${APACHE_LOG_DIR}/docs-error.log
+    CustomLog ${APACHE_LOG_DIR}/docs-access.log combined
+</VirtualHost>

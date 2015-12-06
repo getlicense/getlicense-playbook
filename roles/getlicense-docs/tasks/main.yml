@@ -1,0 +1,11 @@
+---
+- name: Install Apache Web Server
+  apt: pkg=apache2 state=present
+
+- name: Add HostVirtual
+  copy: src=docs-vhost dest=/etc/apache2/sites-available/docs-vhost owner=root group=root mode=0644
+
+- name: Add symbolic link
+  file: src=/etc/apache2/sites-available/docs-vhost dest=/etc/apache2/sites-enabled/docs-vhost state=link
+  notify:
+  - Restart Apache Web Server
